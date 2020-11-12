@@ -5,39 +5,16 @@
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-    <table border="1" class="align-content-center">
-        <caption>Cases by Municipality</caption>
-        <tr>
-            <th>Municipality</th>
-            <th>Population</th>
-            <th>Active cases</th>
-            <th>Total cases</th>
-            <th>Positive tests</th>
-            <th>Total tests</th>
-        </tr>
-        <tr>
-            <td>sadf</td>
-            <td>sadf</td>
-            <td>sadf</td>
-            <td>sadf</td>
-            <td>sadf</td>
-            <td>sadf</td>
-        </tr>
-        <tr>
-            <td>sadf</td>
-            <td>sadf</td>
-            <td>sadf</td>
-            <td>sadf</td>
-            <td>sadf</td>
-            <td>sadf</td>
-        </tr>
-        <tr>
-            <td>sadf</td>
-            <td>sadf</td>
-            <td>sadf</td>
-            <td>sadf</td>
-            <td>sadf</td>
-            <td>sadf</td>
-        </tr>
-    </table>
+    <asp:gridview border="1" class="align-content-center" id="casebymunicipality"  emptydatatext="No data available." runat="server">
+        <Columns>
+            <asp:BoundField HeaderText="Municipality" DataField="Municipality"></asp:BoundField>
+            <asp:BoundField HeaderText="Population" DataField="Population"></asp:BoundField>
+            <!--
+            <asp:BoundField HeaderText="Active cases" DataField="ActiveCases"></asp:BoundField>
+            <asp:BoundField HeaderText="Total cases" DataField="TotalCases"></asp:BoundField>
+            <asp:BoundField HeaderText="Positive tests" DataField="PositiveTests"></asp:BoundField>
+            <asp:BoundField HeaderText="Total tests" DataField="TotalTests"></asp:BoundField>
+            -->
+        </Columns>
+    </asp:gridview>
 </div>

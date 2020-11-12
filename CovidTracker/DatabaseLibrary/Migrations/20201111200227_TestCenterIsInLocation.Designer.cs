@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DatabaseLibrary.Migrations
 {
     [DbContext(typeof(TrackerContext))]
-    [Migration("20201109154133_RelationsOnMunicipality")]
-    partial class RelationsOnMunicipality
+    [Migration("20201111200227_TestCenterIsInLocation")]
+    partial class TestCenterIsInLocation
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,10 +23,8 @@ namespace DatabaseLibrary.Migrations
 
             modelBuilder.Entity("DatabaseLibrary.Citizen", b =>
                 {
-                    b.Property<int>("SSN")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("SSN")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Age")
                         .HasColumnType("int");
@@ -37,7 +35,7 @@ namespace DatabaseLibrary.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LivesInName")
+                    b.Property<string>("MunicipalityName")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Sex")
@@ -46,15 +44,15 @@ namespace DatabaseLibrary.Migrations
 
                     b.HasKey("SSN");
 
-                    b.HasIndex("LivesInName");
+                    b.HasIndex("MunicipalityName");
 
                     b.ToTable("Citizens");
                 });
 
             modelBuilder.Entity("DatabaseLibrary.CitizenTestedAtTestCenter", b =>
                 {
-                    b.Property<int>("CitizenSSN")
-                        .HasColumnType("int");
+                    b.Property<string>("CitizenSSN")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("TestCenterName")
                         .HasColumnType("nvarchar(450)");
@@ -77,8 +75,8 @@ namespace DatabaseLibrary.Migrations
 
             modelBuilder.Entity("DatabaseLibrary.CitizenWasAtLocation", b =>
                 {
-                    b.Property<int>("VisitingCitizenSSN")
-                        .HasColumnType("int");
+                    b.Property<string>("VisitingCitizenSSN")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("VisitedLocationAddress")
                         .HasColumnType("nvarchar(450)");
@@ -105,7 +103,7 @@ namespace DatabaseLibrary.Migrations
 
                     b.HasIndex("MunicipalityName");
 
-                    b.ToTable("Location");
+                    b.ToTable("Locations");
                 });
 
             modelBuilder.Entity("DatabaseLibrary.Municipality", b =>
@@ -121,6 +119,19 @@ namespace DatabaseLibrary.Migrations
                     b.ToTable("Municipalities");
                 });
 
+            modelBuilder.Entity("DatabaseLibrary.Nation", b =>
+                {
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Population")
+                        .HasColumnType("int");
+
+                    b.HasKey("Name");
+
+                    b.ToTable("Nations");
+                });
+
             modelBuilder.Entity("DatabaseLibrary.TestCenter", b =>
                 {
                     b.Property<string>("Name")
@@ -129,12 +140,12 @@ namespace DatabaseLibrary.Migrations
                     b.Property<string>("Hours")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PlacedInName")
+                    b.Property<string>("LocationAddress")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Name");
 
-                    b.HasIndex("PlacedInName");
+                    b.HasIndex("LocationAddress");
 
                     b.ToTable("TestCenters");
                 });
@@ -168,7 +179,7 @@ namespace DatabaseLibrary.Migrations
                 {
                     b.HasOne("DatabaseLibrary.Municipality", "LivesIn")
                         .WithMany("CitizensInMunicipality")
-                        .HasForeignKey("LivesInName");
+                        .HasForeignKey("MunicipalityName");
                 });
 
             modelBuilder.Entity("DatabaseLibrary.CitizenTestedAtTestCenter", b =>
@@ -203,16 +214,16 @@ namespace DatabaseLibrary.Migrations
 
             modelBuilder.Entity("DatabaseLibrary.Location", b =>
                 {
-                    b.HasOne("DatabaseLibrary.Municipality", null)
+                    b.HasOne("DatabaseLibrary.Municipality", "IsIn")
                         .WithMany("LocationsInMunicipality")
                         .HasForeignKey("MunicipalityName");
                 });
 
             modelBuilder.Entity("DatabaseLibrary.TestCenter", b =>
                 {
-                    b.HasOne("DatabaseLibrary.Municipality", "PlacedIn")
-                        .WithMany()
-                        .HasForeignKey("PlacedInName");
+                    b.HasOne("DatabaseLibrary.Location", "PlacedIn")
+                        .WithMany("TestCentersAtLocation")
+                        .HasForeignKey("LocationAddress");
                 });
 
             modelBuilder.Entity("DatabaseLibrary.TestCenterManagement", b =>

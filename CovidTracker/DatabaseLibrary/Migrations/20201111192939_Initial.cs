@@ -3,30 +3,72 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DatabaseLibrary.Migrations
 {
-    public partial class Expanded : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "Age",
-                table: "Citizens",
-                nullable: false,
-                defaultValue: 0);
-
-            migrationBuilder.AddColumn<string>(
-                name: "LivesInName",
-                table: "Citizens",
-                nullable: true);
-
             migrationBuilder.CreateTable(
-                name: "Location",
+                name: "Municipalities",
                 columns: table => new
                 {
-                    Address = table.Column<string>(nullable: false)
+                    Name = table.Column<string>(nullable: false),
+                    Population = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Location", x => x.Address);
+                    table.PrimaryKey("PK_Municipalities", x => x.Name);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Nations",
+                columns: table => new
+                {
+                    Name = table.Column<string>(nullable: false),
+                    Population = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Nations", x => x.Name);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Citizens",
+                columns: table => new
+                {
+                    SSN = table.Column<string>(nullable: false),
+                    FirstName = table.Column<string>(nullable: true),
+                    LastName = table.Column<string>(nullable: true),
+                    Sex = table.Column<string>(nullable: false),
+                    Age = table.Column<int>(nullable: false),
+                    MunicipalityName = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Citizens", x => x.SSN);
+                    table.ForeignKey(
+                        name: "FK_Citizens_Municipalities_MunicipalityName",
+                        column: x => x.MunicipalityName,
+                        principalTable: "Municipalities",
+                        principalColumn: "Name",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Locations",
+                columns: table => new
+                {
+                    Address = table.Column<string>(nullable: false),
+                    MunicipalityName = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Locations", x => x.Address);
+                    table.ForeignKey(
+                        name: "FK_Locations_Municipalities_MunicipalityName",
+                        column: x => x.MunicipalityName,
+                        principalTable: "Municipalities",
+                        principalColumn: "Name",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -52,7 +94,7 @@ namespace DatabaseLibrary.Migrations
                 name: "CitizenWasAtLocation",
                 columns: table => new
                 {
-                    VisitingCitizenSSN = table.Column<int>(nullable: false),
+                    VisitingCitizenSSN = table.Column<string>(nullable: false),
                     VisitedLocationAddress = table.Column<string>(nullable: false),
                     DateOfVisit = table.Column<DateTime>(nullable: false)
                 },
@@ -60,9 +102,9 @@ namespace DatabaseLibrary.Migrations
                 {
                     table.PrimaryKey("PK_CitizenWasAtLocation", x => new { x.VisitingCitizenSSN, x.VisitedLocationAddress });
                     table.ForeignKey(
-                        name: "FK_CitizenWasAtLocation_Location_VisitedLocationAddress",
+                        name: "FK_CitizenWasAtLocation_Locations_VisitedLocationAddress",
                         column: x => x.VisitedLocationAddress,
-                        principalTable: "Location",
+                        principalTable: "Locations",
                         principalColumn: "Address",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -77,7 +119,7 @@ namespace DatabaseLibrary.Migrations
                 name: "CitizenTestedAtTestCenter",
                 columns: table => new
                 {
-                    CitizenSSN = table.Column<int>(nullable: false),
+                    CitizenSSN = table.Column<string>(nullable: false),
                     TestCenterName = table.Column<string>(nullable: false),
                     Result = table.Column<string>(nullable: true),
                     Date = table.Column<DateTime>(nullable: false),
@@ -122,9 +164,9 @@ namespace DatabaseLibrary.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Citizens_LivesInName",
+                name: "IX_Citizens_MunicipalityName",
                 table: "Citizens",
-                column: "LivesInName");
+                column: "MunicipalityName");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CitizenTestedAtTestCenter_TestCenterName",
@@ -137,6 +179,11 @@ namespace DatabaseLibrary.Migrations
                 column: "VisitedLocationAddress");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Locations_MunicipalityName",
+                table: "Locations",
+                column: "MunicipalityName");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TestCenterManagement_ManagedTestCenterName",
                 table: "TestCenterManagement",
                 column: "ManagedTestCenterName",
@@ -147,22 +194,10 @@ namespace DatabaseLibrary.Migrations
                 name: "IX_TestCenters_PlacedInName",
                 table: "TestCenters",
                 column: "PlacedInName");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Citizens_Municipalities_LivesInName",
-                table: "Citizens",
-                column: "LivesInName",
-                principalTable: "Municipalities",
-                principalColumn: "Name",
-                onDelete: ReferentialAction.Restrict);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Citizens_Municipalities_LivesInName",
-                table: "Citizens");
-
             migrationBuilder.DropTable(
                 name: "CitizenTestedAtTestCenter");
 
@@ -170,25 +205,22 @@ namespace DatabaseLibrary.Migrations
                 name: "CitizenWasAtLocation");
 
             migrationBuilder.DropTable(
+                name: "Nations");
+
+            migrationBuilder.DropTable(
                 name: "TestCenterManagement");
 
             migrationBuilder.DropTable(
-                name: "Location");
+                name: "Locations");
+
+            migrationBuilder.DropTable(
+                name: "Citizens");
 
             migrationBuilder.DropTable(
                 name: "TestCenters");
 
-            migrationBuilder.DropIndex(
-                name: "IX_Citizens_LivesInName",
-                table: "Citizens");
-
-            migrationBuilder.DropColumn(
-                name: "Age",
-                table: "Citizens");
-
-            migrationBuilder.DropColumn(
-                name: "LivesInName",
-                table: "Citizens");
+            migrationBuilder.DropTable(
+                name: "Municipalities");
         }
     }
 }

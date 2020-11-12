@@ -20,10 +20,37 @@ namespace CovidTrackerWebApp.Controllers
 
         public IActionResult Index()
         {
+            ViewResult view = View();
+            view.
             return View();
         }
 
-        public IActionResult Cases()
+        public IActionResult Statistics()
+        {
+            return View();
+        }
+
+        public IActionResult PossibleInfections()
+        {
+            return View();
+        }
+
+        public IActionResult NewCitizen()
+        {
+            return View();
+        }
+
+        public IActionResult NewTestCenter()
+        {
+            return View();
+        }
+
+        public IActionResult NewTestCase()
+        {
+            return View();
+        }
+
+        public IActionResult NewLocation()
         {
             return View();
         }

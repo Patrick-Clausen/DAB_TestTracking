@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DatabaseLibrary.Migrations
 {
     [DbContext(typeof(TrackerContext))]
-    [Migration("20201109154830_MunicipalityKeys")]
-    partial class MunicipalityKeys
+    [Migration("20201111192939_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,10 +23,8 @@ namespace DatabaseLibrary.Migrations
 
             modelBuilder.Entity("DatabaseLibrary.Citizen", b =>
                 {
-                    b.Property<int>("SSN")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("SSN")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Age")
                         .HasColumnType("int");
@@ -53,8 +51,8 @@ namespace DatabaseLibrary.Migrations
 
             modelBuilder.Entity("DatabaseLibrary.CitizenTestedAtTestCenter", b =>
                 {
-                    b.Property<int>("CitizenSSN")
-                        .HasColumnType("int");
+                    b.Property<string>("CitizenSSN")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("TestCenterName")
                         .HasColumnType("nvarchar(450)");
@@ -77,8 +75,8 @@ namespace DatabaseLibrary.Migrations
 
             modelBuilder.Entity("DatabaseLibrary.CitizenWasAtLocation", b =>
                 {
-                    b.Property<int>("VisitingCitizenSSN")
-                        .HasColumnType("int");
+                    b.Property<string>("VisitingCitizenSSN")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("VisitedLocationAddress")
                         .HasColumnType("nvarchar(450)");

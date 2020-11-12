@@ -1,0 +1,9 @@
+﻿DROP TABLE __EFMigrationsHistory;
+DROP TABLE Citizens;
+DROP TABLE CitizenTestedAtTestCenter;
+DROP TABLE CitizenWasAtLocation;
+DROP TABLE Municipalities;
+DROP TABLE Locations;
+DROP TABLE Nations;
+DROP TABLE TestCenterManagement;
+DROP TABLE TestCenters;

@@ -4,14 +4,20 @@ namespace DatabaseLibrary
 {
     public class TrackerContext : DbContext
     {
+        
         public DbSet<Citizen> Citizens { get; set; }
         public DbSet<Municipality> Municipalities { get; set; }
 
         public DbSet<TestCenter> TestCenters { get; set; }
 
+        public DbSet<TestCenterManagement> TestCenterManagements { get; set; }
+
         public DbSet<Location> Locations { get; set; }
 
         public DbSet<Nation> Nations { get; set; }
+
+        public DbSet<CitizenTestedAtTestCenter> CitizenTestedAtTestCenters { get; set; }
+        public DbSet<CitizenWasAtLocation> CitizenWasAtLocations { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -25,12 +31,16 @@ namespace DatabaseLibrary
             //One to one relationship between TestCenter and TestCenterManagement
             modelBuilder.Entity<TestCenter>()
                 .HasOne(b => b.HasManagement)
-                .WithOne(i => i.ManagesTestCenter)
-                .HasForeignKey<TestCenterManagement>(b => b.ManagedTestCenterName);
+                .WithMany(i => i.ManagesTestCenters)
+                .HasForeignKey(b => b.ManagementName);
+
+            //One to many relationship between TestCenter and Location
+            modelBuilder.Entity<TestCenter>()
+                .HasOne(t => t.PlacedIn)
+                .WithMany(l => l.TestCentersAtLocation)
+                .HasForeignKey(t => t.LocationAddress);
 
             //Many to many relationship between Citizen and TestCenter
-            modelBuilder.Entity<CitizenTestedAtTestCenter>()
-                .HasKey(cttc => new {cttc.CitizenSSN, cttc.TestCenterName});
             modelBuilder.Entity<CitizenTestedAtTestCenter>()
                 .HasOne(cttc => cttc.TestedCitizen)
                 .WithMany(c => c.Tests)
@@ -41,8 +51,6 @@ namespace DatabaseLibrary
                 .HasForeignKey(cttc => cttc.TestCenterName);
 
             //Many to many relationship between Citizen and Location
-            modelBuilder.Entity<CitizenWasAtLocation>()
-                .HasKey(cwal => new {cwal.VisitingCitizenSSN, cwal.VisitedLocationAddress});
             modelBuilder.Entity<CitizenWasAtLocation>()
                 .HasOne(cwal => cwal.VisitingCitizen)
                 .WithMany(c => c.WasAtLocations)

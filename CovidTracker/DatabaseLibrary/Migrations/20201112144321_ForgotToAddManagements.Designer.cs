@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DatabaseLibrary.Migrations
 {
     [DbContext(typeof(TrackerContext))]
-    [Migration("20201109154340_NationsAndLocations")]
-    partial class NationsAndLocations
+    [Migration("20201112144321_ForgotToAddManagements")]
+    partial class ForgotToAddManagements
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,10 +23,8 @@ namespace DatabaseLibrary.Migrations
 
             modelBuilder.Entity("DatabaseLibrary.Citizen", b =>
                 {
-                    b.Property<int>("SSN")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("SSN")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Age")
                         .HasColumnType("int");
@@ -37,7 +35,7 @@ namespace DatabaseLibrary.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LivesInName")
+                    b.Property<string>("MunicipalityName")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Sex")
@@ -46,15 +44,15 @@ namespace DatabaseLibrary.Migrations
 
                     b.HasKey("SSN");
 
-                    b.HasIndex("LivesInName");
+                    b.HasIndex("MunicipalityName");
 
                     b.ToTable("Citizens");
                 });
 
             modelBuilder.Entity("DatabaseLibrary.CitizenTestedAtTestCenter", b =>
                 {
-                    b.Property<int>("CitizenSSN")
-                        .HasColumnType("int");
+                    b.Property<string>("CitizenSSN")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("TestCenterName")
                         .HasColumnType("nvarchar(450)");
@@ -77,8 +75,8 @@ namespace DatabaseLibrary.Migrations
 
             modelBuilder.Entity("DatabaseLibrary.CitizenWasAtLocation", b =>
                 {
-                    b.Property<int>("VisitingCitizenSSN")
-                        .HasColumnType("int");
+                    b.Property<string>("VisitingCitizenSSN")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("VisitedLocationAddress")
                         .HasColumnType("nvarchar(450)");
@@ -142,46 +140,42 @@ namespace DatabaseLibrary.Migrations
                     b.Property<string>("Hours")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PlacedInName")
+                    b.Property<string>("LocationAddress")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ManagementName")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Name");
 
-                    b.HasIndex("PlacedInName");
+                    b.HasIndex("LocationAddress");
+
+                    b.HasIndex("ManagementName");
 
                     b.ToTable("TestCenters");
                 });
 
             modelBuilder.Entity("DatabaseLibrary.TestCenterManagement", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ManagedTestCenterName")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("PhoneNumber")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("Name");
 
-                    b.HasIndex("ManagedTestCenterName")
-                        .IsUnique()
-                        .HasFilter("[ManagedTestCenterName] IS NOT NULL");
-
-                    b.ToTable("TestCenterManagement");
+                    b.ToTable("TestCenterManagements");
                 });
 
             modelBuilder.Entity("DatabaseLibrary.Citizen", b =>
                 {
                     b.HasOne("DatabaseLibrary.Municipality", "LivesIn")
                         .WithMany("CitizensInMunicipality")
-                        .HasForeignKey("LivesInName");
+                        .HasForeignKey("MunicipalityName");
                 });
 
             modelBuilder.Entity("DatabaseLibrary.CitizenTestedAtTestCenter", b =>
@@ -216,23 +210,20 @@ namespace DatabaseLibrary.Migrations
 
             modelBuilder.Entity("DatabaseLibrary.Location", b =>
                 {
-                    b.HasOne("DatabaseLibrary.Municipality", null)
+                    b.HasOne("DatabaseLibrary.Municipality", "IsIn")
                         .WithMany("LocationsInMunicipality")
                         .HasForeignKey("MunicipalityName");
                 });
 
             modelBuilder.Entity("DatabaseLibrary.TestCenter", b =>
                 {
-                    b.HasOne("DatabaseLibrary.Municipality", "PlacedIn")
-                        .WithMany()
-                        .HasForeignKey("PlacedInName");
-                });
+                    b.HasOne("DatabaseLibrary.Location", "PlacedIn")
+                        .WithMany("TestCentersAtLocation")
+                        .HasForeignKey("LocationAddress");
 
-            modelBuilder.Entity("DatabaseLibrary.TestCenterManagement", b =>
-                {
-                    b.HasOne("DatabaseLibrary.TestCenter", "ManagesTestCenter")
-                        .WithOne("HasManagement")
-                        .HasForeignKey("DatabaseLibrary.TestCenterManagement", "ManagedTestCenterName");
+                    b.HasOne("DatabaseLibrary.TestCenterManagement", "HasManagement")
+                        .WithMany("ManagesTestCenters")
+                        .HasForeignKey("ManagementName");
                 });
 #pragma warning restore 612, 618
         }
